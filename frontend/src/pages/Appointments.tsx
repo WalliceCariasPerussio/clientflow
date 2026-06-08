@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Plus, Trash2, Edit3, Calendar, Clock, CheckCircle, XCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus, Trash2, Edit3, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '@/lib/api'
 import type { Client, PaginatedResponse } from '@/types'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
-import { Badge } from '@/components/ui/Badge'
 
 interface Appointment {
   id: number; title: string; description: string | null;

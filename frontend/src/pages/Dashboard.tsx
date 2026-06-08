@@ -101,11 +101,11 @@ export default function Dashboard() {
   ]
 
   const monthlyChartData = monthlySales.map((m) => {
-    const [year, month] = m.month.split('-')
+    const [, month] = m.month.split('-')
     return { month: MONTH_LABELS[month] ?? month, total: m.total, count: m.count }
   })
 
-  const formatTooltip = (value: number) => formatCurrency(value)
+  const formatTooltip = (value: any) => formatCurrency(Number(value))
 
   return (
     <div className="space-y-6 motion-preset-slide-up">
