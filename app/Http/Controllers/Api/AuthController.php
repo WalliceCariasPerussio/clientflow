@@ -81,12 +81,45 @@ class AuthController extends Controller
     }
 
     /**
+     * Atualiza o perfil do usuário autenticado.
+     */
+    public function profile(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name'     => ['sometimes', 'string', 'max:255'],
+            'password' => ['sometimes', 'string', 'min:8', 'confirmed'],
+            'avatar_url' => ['sometimes', 'nullable', 'string', 'max:2048'],
+        ]);
+
+        $user = $request->user();
+
+        if (isset($validated['name'])) {
+            $user->name = $validated['name'];
+        }
+
+        if (isset($validated['avatar_url'])) {
+            $user->avatar_url = $validated['avatar_url'];
+        }
+
+        if (isset($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Perfil atualizado com sucesso.',
+            'user'    => new UserResource($user->loadCount('clients')),
+        ]);
+    }
+
+    /**
      * Retorna os dados do usuário autenticado.
      */
     public function me(Request $request): JsonResponse
     {
         return response()->json([
-            'user' => new UserResource($request->user()),
+            'user' => new UserResource($request->user()->loadCount('clients')),
         ]);
     }
 }

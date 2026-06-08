@@ -32,7 +32,7 @@ class UpdateClientRequest extends FormRequest
             'name'    => ['sometimes', 'required', 'string', 'max:255'],
             'email'   => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('clients')->ignore($clientId)],
             'phone'   => ['nullable', 'string', 'max:30'],
-            'company' => ['nullable', 'string', 'max:255'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
             'status'  => ['sometimes', 'required', 'string', Rule::in(['active', 'inactive', 'lead'])],
             'notes'   => ['nullable', 'string'],
         ];

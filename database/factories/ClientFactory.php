@@ -3,62 +3,42 @@
 namespace Database\Factories;
 
 use App\Models\Client;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Factory para o modelo Client.
- * Gera dados realistas para testes e seeders.
- *
  * @extends Factory<Client>
  */
 class ClientFactory extends Factory
 {
     protected $model = Client::class;
 
-    /**
-     * Define o estado padrão do modelo.
-     */
     public function definition(): array
     {
         return [
-            'name'    => fake()->name(),
-            'email'   => fake()->unique()->safeEmail(),
-            'phone'   => fake()->phoneNumber(),
-            'company' => fake()->company(),
-            'status'  => fake()->randomElement(['active', 'inactive', 'lead']),
-            'notes'   => fake()->sentence(),
-            'user_id' => User::factory(),
+            'name'       => fake()->name(),
+            'email'      => fake()->unique()->safeEmail(),
+            'phone'      => fake()->phoneNumber(),
+            'company_id' => Company::factory(),
+            'status'     => fake()->randomElement(['active', 'inactive', 'lead']),
+            'notes'      => fake()->sentence(),
+            'user_id'    => User::factory(),
         ];
     }
 
-    /**
-     * Estado: cliente ativo.
-     */
     public function active(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'status' => 'active',
-        ]);
+        return $this->state(fn () => ['status' => 'active']);
     }
 
-    /**
-     * Estado: cliente inativo.
-     */
     public function inactive(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'status' => 'inactive',
-        ]);
+        return $this->state(fn () => ['status' => 'inactive']);
     }
 
-    /**
-     * Estado: lead.
-     */
     public function lead(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'status' => 'lead',
-        ]);
+        return $this->state(fn () => ['status' => 'lead']);
     }
 }

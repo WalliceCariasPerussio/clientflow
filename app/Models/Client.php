@@ -15,44 +15,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $name
  * @property string $email
  * @property string|null $phone
- * @property string|null $company
+ * @property int|null $company_id
  * @property string $status       // active, inactive, lead
  * @property string|null $notes
  * @property int $user_id
  */
-#[Fillable(['name', 'email', 'phone', 'company', 'status', 'notes', 'user_id'])]
+#[Fillable(['name', 'email', 'phone', 'company_id', 'status', 'notes', 'user_id'])]
 class Client extends Model
 {
     /** @use HasFactory<ClientFactory> */
     use HasFactory;
 
-    /**
-     * Relacionamento: cada cliente pertence a um usuário (vendedor).
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Scope: filtra clientes ativos.
-     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    /**
-     * Scope: filtra clientes inativos.
-     */
     public function scopeInactive($query)
     {
         return $query->where('status', 'inactive');
     }
 
-    /**
-     * Scope: filtra leads.
-     */
     public function scopeLead($query)
     {
         return $query->where('status', 'lead');

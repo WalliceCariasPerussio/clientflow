@@ -30,7 +30,7 @@ class StoreClientRequest extends FormRequest
             'name'    => ['required', 'string', 'max:255'],
             'email'   => ['required', 'string', 'email', 'max:255', 'unique:clients'],
             'phone'   => ['nullable', 'string', 'max:30'],
-            'company' => ['nullable', 'string', 'max:255'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
             'status'  => ['required', 'string', Rule::in(['active', 'inactive', 'lead'])],
             'notes'   => ['nullable', 'string'],
         ];

@@ -9,10 +9,16 @@ export interface Client {
   name: string
   email: string
   phone: string | null
-  company: string | null
+  company_id: number | null
+  company_name: string | null
   status: 'active' | 'inactive' | 'lead'
   notes: string | null
   created_at: string
+}
+
+export interface Company {
+  id: number
+  name: string
 }
 
 export interface DashboardStats {
@@ -20,6 +26,7 @@ export interface DashboardStats {
   active: number
   inactive: number
   leads: number
+  company_count: number
 }
 
 export interface PaginatedResponse<T> {

@@ -10,6 +10,7 @@ use App\Models\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Controller de Clientes da API.
@@ -25,7 +26,7 @@ class ClientController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $clients = Client::where('user_id', $request->user()->id)
+        $clients = Client::with('company')->where('user_id', $request->user()->id)
             ->when($request->status, function ($query, $status) {
                 // Filtra por status se o parâmetro for informado
                 return $query->where('status', $status);
@@ -92,5 +93,58 @@ class ClientController extends Controller
         return response()->json([
             'message' => 'Cliente removido com sucesso.',
         ]);
+    }
+
+    /**
+     * Exporta os clientes do usuário como CSV.
+     */
+    public function export(Request $request): StreamedResponse
+    {
+        $clients = Client::where('user_id', $request->user()->id)
+            ->when($request->status, fn ($q, $s) => $q->where('status', $s))
+            ->latest()
+            ->get();
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="clientes.csv"',
+        ];
+
+        return response()->stream(function () use ($clients) {
+            $handle = fopen('php://output', 'w');
+            // BOM para Excel reconhecer UTF-8
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // Cabeçalho
+            fputcsv($handle, ['Nome', 'Email', 'Telefone', 'Empresa', 'Status', 'Observações', 'Criado em']);
+
+            foreach ($clients as $client) {
+                $statusMap = ['active' => 'Ativo', 'inactive' => 'Inativo', 'lead' => 'Lead'];
+                fputcsv($handle, [
+                    $client->name,
+                    $client->email,
+                    $client->phone ?? '',
+                    $client->company?->name ?? '',
+                    $statusMap[$client->status] ?? $client->status,
+                    $client->notes ?? '',
+                    $client->created_at->format('d/m/Y H:i'),
+                ]);
+            }
+
+            fclose($handle);
+        }, 200, $headers);
+    }
+
+    /**
+     * Retorna os 5 clientes mais recentes do usuário.
+     */
+    public function recent(Request $request): AnonymousResourceCollection
+    {
+        $clients = Client::with('company')->where('user_id', $request->user()->id)
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return ClientResource::collection($clients);
     }
 }

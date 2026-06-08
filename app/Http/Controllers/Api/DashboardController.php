@@ -33,12 +33,19 @@ class DashboardController extends Controller
         $inactive = Client::where('user_id', $userId)->where('status', 'inactive')->count();
         $leads    = Client::where('user_id', $userId)->where('status', 'lead')->count();
 
+        // Contagem de empresas distintas vinculadas
+        $companyCount = Client::where('user_id', $userId)
+            ->whereNotNull('company_id')
+            ->distinct('company_id')
+            ->count('company_id');
+
         return response()->json([
             'data' => [
-                'total'    => $total,
-                'active'   => $active,
-                'inactive' => $inactive,
-                'leads'    => $leads,
+                'total'         => $total,
+                'active'        => $active,
+                'inactive'      => $inactive,
+                'leads'         => $leads,
+                'company_count' => $companyCount,
             ],
         ]);
     }

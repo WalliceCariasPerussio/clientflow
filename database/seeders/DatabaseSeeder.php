@@ -3,37 +3,56 @@
 namespace Database\Seeders;
 
 use App\Models\Client;
+use App\Models\Company;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Popula o banco com dados de demonstração.
      *
-     * Cria um usuário demo e 20 clientes de exemplo para o portfólio ClientFlow.
+     * Cria um usuário demo, 29 empresas e 32 clientes vinculados.
      */
     public function run(): void
     {
-        // Usuário demo para testar a aplicação
         $user = User::factory()->create([
-            'name'  => 'Demo User',
+            'name'  => 'Ana Silva',
             'email' => 'demo@clientflow.app',
         ]);
 
-        // 20 clientes com distribuição variada de status
-        $statuses = [
-            'active'   => 10,  // 10 ativos
-            'inactive' => 4,   // 4 inativos
-            'lead'     => 6,   // 6 leads
-        ];
+        // 29 empresas
+        $companies = Company::factory(29)->create(['user_id' => $user->id]);
 
-        foreach ($statuses as $status => $count) {
-            Client::factory($count)->{$status}()->create([
-                'user_id' => $user->id,
+        // 10 ativos
+        for ($i = 0; $i < 10; $i++) {
+            Client::factory()->active()->create([
+                'user_id'    => $user->id,
+                'company_id' => $companies->random()->id,
+            ]);
+        }
+
+        // 4 inativos
+        for ($i = 0; $i < 4; $i++) {
+            Client::factory()->inactive()->create([
+                'user_id'    => $user->id,
+                'company_id' => $companies->random()->id,
+            ]);
+        }
+
+        // 6 leads
+        for ($i = 0; $i < 6; $i++) {
+            Client::factory()->lead()->create([
+                'user_id'    => $user->id,
+                'company_id' => $companies->random()->id,
+            ]);
+        }
+
+        // +12 extras pra completar 32
+        for ($i = 0; $i < 12; $i++) {
+            Client::factory()->create([
+                'user_id'    => $user->id,
+                'company_id' => $companies->random()->id,
             ]);
         }
     }
