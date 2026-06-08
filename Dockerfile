@@ -36,11 +36,11 @@ RUN cp .env.example .env \
     && sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env \
     && echo 'DB_DATABASE=/var/www/database/database.sqlite' >> .env \
     && echo 'APP_URL=http://localhost' >> .env \
-    && php artisan key:generate --force \
-    && touch database/database.sqlite \
-    && php artisan migrate --force \
-    && php artisan db:seed --force
+    && php artisan key:generate --force
 
 EXPOSE 80
 
-CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
