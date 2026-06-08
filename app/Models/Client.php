@@ -36,6 +36,11 @@ class Client extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function sales(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');

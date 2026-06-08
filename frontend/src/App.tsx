@@ -6,6 +6,7 @@ import Dashboard from '@/pages/Dashboard'
 import Clients from '@/pages/Clients'
 import Companies from '@/pages/Companies'
 import Profile from '@/pages/Profile'
+import Sales from '@/pages/Sales'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -23,6 +24,7 @@ function AppRoutes() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/clients" element={<Clients />} />
         <Route path="/companies" element={<Companies />} />
+        <Route path="/sales" element={<Sales />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Route>

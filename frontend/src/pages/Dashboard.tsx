@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Users, UserCheck, UserX, Sparkles, Building2, Download, TrendingUp } from 'lucide-react'
+import { Users, UserCheck, UserX, Sparkles, Building2, Download, TrendingUp, DollarSign, Clock3 } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -48,6 +48,10 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
+        <Skeleton className="h-6 w-24 mt-4" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Skeleton className="h-80 rounded-xl" />
           <Skeleton className="h-80 rounded-xl" />
@@ -63,6 +67,15 @@ export default function Dashboard() {
     { name: 'Inativos', value: stats.inactive },
     { name: 'Leads', value: stats.leads },
   ]
+
+  const formatCurrency = (v: number) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'USD' }).format(v)
+
+  const salesCards = stats.sales ? [
+    { label: 'Receita Total', value: formatCurrency(stats.sales.total_revenue), icon: DollarSign, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30' },
+    { label: 'Este Mês', value: formatCurrency(stats.sales.this_month), icon: TrendingUp, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-900/30' },
+    { label: 'Pendente', value: formatCurrency(stats.sales.pending_amount), icon: Clock3, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/30' },
+  ] : []
 
   const cards = [
     { label: 'Total de Clientes', value: stats.total, icon: Users, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-900/30' },
@@ -97,6 +110,28 @@ export default function Dashboard() {
           </Card>
         ))}
       </div>
+
+      {/* Sales Cards */}
+      {salesCards.length > 0 && (
+        <>
+          <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mt-2">Financeiro</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {salesCards.map(({ label, value, icon: Icon, color, bg }) => (
+              <Card key={label} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</span>
+                    <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center`}>
+                      <Icon size={20} className={color} />
+                    </div>
+                  </div>
+                  <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">{value}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Charts + Recent */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

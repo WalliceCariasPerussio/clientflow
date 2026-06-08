@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Client;
 use App\Models\Company;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -49,11 +50,26 @@ class DatabaseSeeder extends Seeder
         }
 
         // +12 extras pra completar 32
+        $allClients = collect();
         for ($i = 0; $i < 12; $i++) {
-            Client::factory()->create([
+            $allClients->push(Client::factory()->create([
                 'user_id'    => $user->id,
                 'company_id' => $companies->random()->id,
-            ]);
+            ]));
+        }
+
+        // Pega todos os clientes ativos pra gerar vendas
+        $activeClients = Client::where('user_id', $user->id)->where('status', 'active')->get();
+
+        // Gera 50 vendas nos últimos 6 meses
+        foreach ($activeClients as $client) {
+            $numSales = rand(1, 6);
+            for ($i = 0; $i < $numSales; $i++) {
+                Sale::factory()->create([
+                    'user_id'   => $user->id,
+                    'client_id' => $client->id,
+                ]);
+            }
         }
     }
 }

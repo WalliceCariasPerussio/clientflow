@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\Sale;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -46,6 +47,12 @@ class DashboardController extends Controller
                 'inactive'      => $inactive,
                 'leads'         => $leads,
                 'company_count' => $companyCount,
+                'sales' => [
+                    'total_revenue'    => (float) Sale::where('user_id', $userId)->completed()->sum('amount'),
+                    'this_month'       => (float) Sale::where('user_id', $userId)->completed()->where('sale_date', '>=', now()->startOfMonth())->sum('amount'),
+                    'pending_amount'   => (float) Sale::where('user_id', $userId)->pending()->sum('amount'),
+                    'this_month_count' => Sale::where('user_id', $userId)->where('sale_date', '>=', now()->startOfMonth())->count(),
+                ],
             ],
         ]);
     }

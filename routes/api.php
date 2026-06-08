@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\SaleController;
 use App\Http\Controllers\CompanyController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,4 +39,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Empresas
     Route::get('/companies', [CompanyController::class, 'index']);
     Route::post('/companies', [CompanyController::class, 'store']);
+
+    // Vendas — CRUD + stats
+    Route::get('/sales/monthly', [SaleController::class, 'monthly']);
+    Route::get('/sales/totals', [SaleController::class, 'totals']);
+    Route::apiResource('/sales', SaleController::class);
 });

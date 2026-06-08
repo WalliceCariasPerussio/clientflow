@@ -27,6 +27,23 @@ export interface DashboardStats {
   inactive: number
   leads: number
   company_count: number
+  sales: {
+    total_revenue: number
+    this_month: number
+    pending_amount: number
+    this_month_count: number
+  }
+}
+
+export interface Sale {
+  id: number
+  client_id: number
+  client?: { id: number; name: string }
+  amount: number
+  description: string | null
+  status: 'completed' | 'pending' | 'cancelled'
+  sale_date: string
+  created_at: string
 }
 
 export interface PaginatedResponse<T> {
