@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Users, LogOut, Moon, Sun, UserCircle, Building2, Menu, X, Banknote } from 'lucide-react'
+import { LayoutDashboard, Users, LogOut, Moon, Sun, UserCircle, Building2, Menu, X, Banknote, Wallet, CalendarDays } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useAuth } from '@/contexts/AuthContext'
 import { Avatar as AvatarComponent } from '@/components/ui/Avatar'
@@ -35,6 +35,12 @@ export default function Layout() {
       </NavLink>
       <NavLink to="/sales" className={linkClass} onClick={closeSidebar}>
         <Banknote size={20} /> Vendas
+      </NavLink>
+      <NavLink to="/finance" className={linkClass} onClick={closeSidebar}>
+        <Wallet size={20} /> Financeiro
+      </NavLink>
+      <NavLink to="/appointments" className={linkClass} onClick={closeSidebar}>
+        <CalendarDays size={20} /> Agenda
       </NavLink>
       <NavLink to="/companies" className={linkClass} onClick={closeSidebar}>
         <Building2 size={20} /> Empresas

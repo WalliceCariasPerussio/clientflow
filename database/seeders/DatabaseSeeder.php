@@ -5,16 +5,13 @@ namespace Database\Seeders;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\Sale;
+use App\Models\Transaction;
+use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Popula o banco com dados de demonstração.
-     *
-     * Cria um usuário demo, 29 empresas e 32 clientes vinculados.
-     */
     public function run(): void
     {
         $user = User::factory()->create([
@@ -22,54 +19,37 @@ class DatabaseSeeder extends Seeder
             'email' => 'demo@clientflow.app',
         ]);
 
-        // 29 empresas
         $companies = Company::factory(29)->create(['user_id' => $user->id]);
 
-        // 10 ativos
         for ($i = 0; $i < 10; $i++) {
-            Client::factory()->active()->create([
-                'user_id'    => $user->id,
-                'company_id' => $companies->random()->id,
-            ]);
+            Client::factory()->active()->create(['user_id' => $user->id, 'company_id' => $companies->random()->id]);
         }
-
-        // 4 inativos
         for ($i = 0; $i < 4; $i++) {
-            Client::factory()->inactive()->create([
-                'user_id'    => $user->id,
-                'company_id' => $companies->random()->id,
-            ]);
+            Client::factory()->inactive()->create(['user_id' => $user->id, 'company_id' => $companies->random()->id]);
         }
-
-        // 6 leads
         for ($i = 0; $i < 6; $i++) {
-            Client::factory()->lead()->create([
-                'user_id'    => $user->id,
-                'company_id' => $companies->random()->id,
-            ]);
+            Client::factory()->lead()->create(['user_id' => $user->id, 'company_id' => $companies->random()->id]);
         }
-
-        // +12 extras pra completar 32
-        $allClients = collect();
         for ($i = 0; $i < 12; $i++) {
-            $allClients->push(Client::factory()->create([
-                'user_id'    => $user->id,
-                'company_id' => $companies->random()->id,
-            ]));
+            Client::factory()->create(['user_id' => $user->id, 'company_id' => $companies->random()->id]);
         }
 
-        // Pega todos os clientes ativos pra gerar vendas
         $activeClients = Client::where('user_id', $user->id)->where('status', 'active')->get();
-
-        // Gera 50 vendas nos últimos 6 meses
         foreach ($activeClients as $client) {
             $numSales = rand(1, 6);
             for ($i = 0; $i < $numSales; $i++) {
-                Sale::factory()->create([
-                    'user_id'   => $user->id,
-                    'client_id' => $client->id,
-                ]);
+                Sale::factory()->create(['user_id' => $user->id, 'client_id' => $client->id]);
             }
+        }
+
+        // 40 transações financeiras
+        for ($i = 0; $i < 40; $i++) {
+            Transaction::factory()->create(['user_id' => $user->id]);
+        }
+
+        // 15 compromissos
+        for ($i = 0; $i < 15; $i++) {
+            Appointment::factory()->create(['user_id' => $user->id]);
         }
     }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Users, UserCheck, UserX, Sparkles, Building2, Download, TrendingUp, DollarSign, Clock3 } from 'lucide-react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
+import { Users, UserCheck, UserX, Sparkles, Building2, Download, TrendingUp, DollarSign, Clock3, BarChart3 } from 'lucide-react'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -15,18 +15,32 @@ const STATUS_LABELS: Record<string, string> = {
   active: 'Ativo', inactive: 'Inativo', lead: 'Lead',
 }
 
+interface MonthlyData {
+  month: string
+  total: number
+  count: number
+}
+
+const MONTH_LABELS: Record<string, string> = {
+  '01': 'Jan', '02': 'Fev', '03': 'Mar', '04': 'Abr', '05': 'Mai', '06': 'Jun',
+  '07': 'Jul', '08': 'Ago', '09': 'Set', '10': 'Out', '11': 'Nov', '12': 'Dez',
+}
+
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentClients, setRecentClients] = useState<Client[]>([])
+  const [monthlySales, setMonthlySales] = useState<MonthlyData[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       api.get('/dashboard'),
       api.get('/clients/recent'),
-    ]).then(([statsRes, recentRes]) => {
+      api.get('/sales/monthly'),
+    ]).then(([statsRes, recentRes, monthlyRes]) => {
       setStats(statsRes.data.data)
       setRecentClients(recentRes.data.data)
+      setMonthlySales(monthlyRes.data.data ?? [])
     }).catch(() => toast.error('Erro ao carregar dashboard'))
       .finally(() => setLoading(false))
   }, [])
@@ -52,6 +66,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
+        <Skeleton className="h-80 rounded-xl" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Skeleton className="h-80 rounded-xl" />
           <Skeleton className="h-80 rounded-xl" />
@@ -84,6 +99,13 @@ export default function Dashboard() {
     { label: 'Leads', value: stats.leads, icon: Sparkles, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/30' },
     { label: 'Empresas', value: (stats as any).company_count ?? 0, icon: Building2, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/30' },
   ]
+
+  const monthlyChartData = monthlySales.map((m) => {
+    const [year, month] = m.month.split('-')
+    return { month: MONTH_LABELS[month] ?? month, total: m.total, count: m.count }
+  })
+
+  const formatTooltip = (value: number) => formatCurrency(value)
 
   return (
     <div className="space-y-6 motion-preset-slide-up">
@@ -131,6 +153,24 @@ export default function Dashboard() {
             ))}
           </div>
         </>
+      )}
+
+      {/* Monthly Sales Chart */}
+      {monthlySales.length > 0 && (
+        <Card>
+          <CardHeader><CardTitle className="flex items-center gap-2"><BarChart3 size={20} /> Vendas por Mês</CardTitle></CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={monthlyChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                <Tooltip formatter={formatTooltip} />
+                <Bar dataKey="total" name="Receita" fill="#6366f1" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
       )}
 
       {/* Charts + Recent */}

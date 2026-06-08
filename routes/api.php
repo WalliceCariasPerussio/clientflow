@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\SaleController;
+use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\CompanyController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,4 +46,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sales/monthly', [SaleController::class, 'monthly']);
     Route::get('/sales/totals', [SaleController::class, 'totals']);
     Route::apiResource('/sales', SaleController::class);
+
+    // Financeiro
+    Route::get('/transactions/balance', [TransactionController::class, 'balance']);
+    Route::apiResource('/transactions', TransactionController::class);
+
+    // Agenda
+    Route::apiResource('/appointments', AppointmentController::class);
 });
