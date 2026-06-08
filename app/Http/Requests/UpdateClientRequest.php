@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+/**
+ * FormRequest para atualização de cliente.
+ * Valida os dados antes da persistência.
+ */
+class UpdateClientRequest extends FormRequest
+{
+    /**
+     * Determina se o usuário está autorizado a atualizar o cliente.
+     */
+    public function authorize(): bool
+    {
+        return true; // Autorização é tratada na policy/controller
+    }
+
+    /**
+     * Regras de validação para atualização de cliente.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        $clientId = $this->route('client')->id ?? $this->route('client');
+
+        return [
+            'name'    => ['sometimes', 'required', 'string', 'max:255'],
+            'email'   => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('clients')->ignore($clientId)],
+            'phone'   => ['nullable', 'string', 'max:30'],
+            'company' => ['nullable', 'string', 'max:255'],
+            'status'  => ['sometimes', 'required', 'string', Rule::in(['active', 'inactive', 'lead'])],
+            'notes'   => ['nullable', 'string'],
+        ];
+    }
+
+    /**
+     * Mensagens de erro personalizadas em português.
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required'   => 'O nome do cliente é obrigatório.',
+            'email.required'  => 'O email do cliente é obrigatório.',
+            'email.email'     => 'Informe um email válido.',
+            'email.unique'    => 'Já existe um cliente com este email.',
+            'status.required' => 'O status do cliente é obrigatório.',
+            'status.in'       => 'Status inválido. Use: active, inactive ou lead.',
+        ];
+    }
+}
