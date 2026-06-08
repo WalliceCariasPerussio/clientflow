@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 // Rotas públicas (sem autenticação)
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 // Rotas protegidas (requerem token Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
