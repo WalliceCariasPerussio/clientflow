@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    container_name: clientflow-app
+    ports:
+      - "8006:80"
+    volumes:
+      - clientflow_data:/var/www/database
+      - clientflow_storage:/var/www/storage
+    restart: unless-stopped
+
+volumes:
+  clientflow_data:
+  clientflow_storage:
