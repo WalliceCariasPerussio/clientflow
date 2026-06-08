@@ -17,12 +17,12 @@ class ClientFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'       => fake()->name(),
-            'email'      => fake()->unique()->safeEmail(),
-            'phone'      => fake()->phoneNumber(),
+            'name'       => $this->faker->name(),
+            'email'      => $this->faker->unique()->safeEmail(),
+            'phone'      => $this->faker->phoneNumber(),
             'company_id' => Company::factory(),
-            'status'     => fake()->randomElement(['active', 'inactive', 'lead']),
-            'notes'      => fake()->sentence(),
+            'status'     => $this->faker->randomElement(['active', 'inactive', 'lead']),
+            'notes'      => $this->faker->sentence(),
             'user_id'    => User::factory(),
         ];
     }
