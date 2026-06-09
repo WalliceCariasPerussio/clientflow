@@ -34,15 +34,17 @@ export default function Finance() {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const [txRes, balRes] = await Promise.all([
-        api.get<PaginatedResponse<Transaction>>(`/transactions?page=${page}&per_page=10${search ? '&search=' + search : ''}${typeFilter ? '&type=' + typeFilter : ''}`),
-        api.get('/transactions/balance'),
-      ])
+      const txRes = await api.get<PaginatedResponse<Transaction>>(`/transactions?page=${page}&per_page=10${search ? '&search=' + search : ''}${typeFilter ? '&type=' + typeFilter : ''}`)
       setTransactions(txRes.data.data)
       setLastPage(txRes.data.meta.last_page)
-      setBalance(balRes.data.data)
-    } catch { toast.error('Erro ao carregar') }
+    } catch { toast.error('Erro ao carregar transações') }
     finally { setLoading(false) }
+
+    // Balance carrega separado
+    try {
+      const balRes = await api.get('/transactions/balance')
+      setBalance(balRes.data.data)
+    } catch { /* balance falhou silenciosamente */ }
   }, [page, search, typeFilter])
 
   useEffect(() => { fetchData() }, [fetchData])
