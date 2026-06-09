@@ -35,7 +35,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) { setLoading(false); return }
     Promise.all([
       api.get('/dashboard'),
       api.get('/clients/recent'),

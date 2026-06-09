@@ -41,7 +41,7 @@ export default function Sales() {
   const [saving, setSaving] = useState(false)
 
   const fetchSales = useCallback(async () => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) { setLoading(false); return }
     setLoading(true)
     try {
       const params = new URLSearchParams({ page: String(page), per_page: '10' })

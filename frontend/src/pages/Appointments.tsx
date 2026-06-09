@@ -32,7 +32,7 @@ export default function Appointments() {
   const [saving, setSaving] = useState(false)
 
   const fetchAppointments = useCallback(async () => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) { setLoading(false); return }
     setLoading(true)
     try {
       const { data } = await api.get<PaginatedResponse<Appointment>>(`/appointments?month=${selectedMonth}&per_page=50`)

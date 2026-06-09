@@ -34,7 +34,7 @@ export default function Finance() {
   const [saving, setSaving] = useState(false)
 
   const fetchData = useCallback(async () => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) { setLoading(false); return }
     setLoading(true)
     try {
       const txRes = await api.get<PaginatedResponse<Transaction>>(`/transactions?page=${page}&per_page=10${search ? '&search=' + search : ''}${typeFilter ? '&type=' + typeFilter : ''}`)
