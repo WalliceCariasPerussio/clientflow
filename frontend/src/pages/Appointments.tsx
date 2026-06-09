@@ -3,6 +3,7 @@ import { Plus, Trash2, Edit3, Calendar, Clock, ChevronLeft, ChevronRight } from 
 import { toast } from 'sonner'
 import api from '@/lib/api'
 import type { Client, PaginatedResponse } from '@/types'
+import { useAuth } from '@/contexts/AuthContext'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
@@ -20,6 +21,7 @@ const STATUS_OPTIONS = [
 ]
 
 export default function Appointments() {
+  const { isAuthenticated } = useAuth()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [clients, setClients] = useState<Client[]>([])
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7))
@@ -30,13 +32,15 @@ export default function Appointments() {
   const [saving, setSaving] = useState(false)
 
   const fetchAppointments = useCallback(async () => {
+    if (!isAuthenticated) return
     setLoading(true)
     try {
       const { data } = await api.get<PaginatedResponse<Appointment>>(`/appointments?month=${selectedMonth}&per_page=50`)
       setAppointments(data.data)
-    } catch { toast.error('Erro ao carregar agenda') }
-    finally { setLoading(false) }
-  }, [selectedMonth])
+    } catch (err: any) {
+      if (err?.response?.status !== 401) toast.error('Erro ao carregar agenda')
+    } finally { setLoading(false) }
+  }, [selectedMonth, isAuthenticated])
 
   useEffect(() => { fetchAppointments() }, [fetchAppointments])
 

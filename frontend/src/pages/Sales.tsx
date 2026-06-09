@@ -6,6 +6,7 @@ import type { Sale, Client, PaginatedResponse } from '@/types'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
+import { useAuth } from '@/contexts/AuthContext'
 
 const STATUS_LABELS: Record<string, string> = {
   completed: 'Concluída',
@@ -20,6 +21,7 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export default function Sales() {
+  const { isAuthenticated } = useAuth()
   const [sales, setSales] = useState<Sale[]>([])
   const [clients, setClients] = useState<Client[]>([])
   const [search, setSearch] = useState('')
@@ -39,6 +41,7 @@ export default function Sales() {
   const [saving, setSaving] = useState(false)
 
   const fetchSales = useCallback(async () => {
+    if (!isAuthenticated) return
     setLoading(true)
     try {
       const params = new URLSearchParams({ page: String(page), per_page: '10' })
@@ -47,19 +50,20 @@ export default function Sales() {
       const { data } = await api.get<PaginatedResponse<Sale>>(`/sales?${params}`)
       setSales(data.data)
       setLastPage(data.meta.last_page)
-    } catch {
-      toast.error('Erro ao carregar vendas')
+    } catch (err: any) {
+      if (err?.response?.status !== 401) toast.error('Erro ao carregar vendas')
     } finally {
       setLoading(false)
     }
-  }, [page, search, statusFilter])
+  }, [page, search, statusFilter, isAuthenticated])
 
   const fetchClients = useCallback(async () => {
+    if (!isAuthenticated) return
     try {
       const { data } = await api.get<PaginatedResponse<Client>>('/clients?per_page=100')
       setClients(data.data)
     } catch { /* silencioso */ }
-  }, [])
+  }, [isAuthenticated])
 
   useEffect(() => { fetchSales() }, [fetchSales])
   useEffect(() => { fetchClients() }, [fetchClients])

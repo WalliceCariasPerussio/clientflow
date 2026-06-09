@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { toast } from 'sonner'
 import api from '@/lib/api'
 import type { DashboardStats, Client } from '@/types'
+import { useAuth } from '@/contexts/AuthContext'
 
 const COLORS = ['#6366f1', '#94a3b8', '#f59e0b']
 
@@ -27,12 +28,14 @@ const MONTH_LABELS: Record<string, string> = {
 }
 
 export default function Dashboard() {
+  const { isAuthenticated } = useAuth()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentClients, setRecentClients] = useState<Client[]>([])
   const [monthlySales, setMonthlySales] = useState<MonthlyData[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!isAuthenticated) return
     Promise.all([
       api.get('/dashboard'),
       api.get('/clients/recent'),
@@ -41,9 +44,10 @@ export default function Dashboard() {
       setStats(statsRes.data.data)
       setRecentClients(recentRes.data.data)
       setMonthlySales(monthlyRes.data.data ?? [])
-    }).catch(() => toast.error('Erro ao carregar dashboard'))
-      .finally(() => setLoading(false))
-  }, [])
+    }).catch((err: any) => {
+      if (err?.response?.status !== 401) toast.error('Erro ao carregar dashboard')
+    }).finally(() => setLoading(false))
+  }, [isAuthenticated])
 
   const handleExport = async () => {
     try {
