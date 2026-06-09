@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
 import { Card, CardContent } from '@/components/ui/Card'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface Transaction {
   id: number; type: 'income' | 'expense'; amount: number;
@@ -19,6 +20,7 @@ interface Balance {
 }
 
 export default function Finance() {
+  const { isAuthenticated } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [balance, setBalance] = useState<Balance | null>(null)
   const [search, setSearch] = useState('')
@@ -32,20 +34,21 @@ export default function Finance() {
   const [saving, setSaving] = useState(false)
 
   const fetchData = useCallback(async () => {
+    if (!isAuthenticated) return
     setLoading(true)
     try {
       const txRes = await api.get<PaginatedResponse<Transaction>>(`/transactions?page=${page}&per_page=10${search ? '&search=' + search : ''}${typeFilter ? '&type=' + typeFilter : ''}`)
       setTransactions(txRes.data.data)
       setLastPage(txRes.data.meta.last_page)
-    } catch { toast.error('Erro ao carregar transações') }
-    finally { setLoading(false) }
+    } catch (err: any) {
+      if (err?.response?.status !== 401) toast.error('Erro ao carregar transações')
+    } finally { setLoading(false) }
 
-    // Balance carrega separado
     try {
       const balRes = await api.get('/transactions/balance')
       setBalance(balRes.data.data)
-    } catch { /* balance falhou silenciosamente */ }
-  }, [page, search, typeFilter])
+    } catch { /* silencioso */ }
+  }, [page, search, typeFilter, isAuthenticated])
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -95,7 +98,6 @@ export default function Finance() {
         </div>
       </div>
 
-      {/* Balance Cards */}
       {balance && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <Card className="border-emerald-200 dark:border-emerald-800"><CardContent className="p-5">
@@ -113,7 +115,6 @@ export default function Finance() {
         </div>
       )}
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1 max-w-sm"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><Input placeholder="Buscar..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} className="pl-9" /></div>
         <select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(1) }} className="h-10 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm">
@@ -121,7 +122,6 @@ export default function Finance() {
         </select>
       </div>
 
-      {/* Table */}
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
         <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
           <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Tipo</th>
