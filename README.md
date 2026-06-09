@@ -1,54 +1,115 @@
 # 🚀 ClientFlow — Mini CRM
 
-**Sistema de gestão de clientes full stack** — um portfólio profissional demonstrando
-desenvolvimento web moderno com Laravel 13 (API) e React 19 (SPA).
+**Sistema de gestão de clientes full stack** — um portfólio profissional demonstrando desenvolvimento web moderno com Laravel 13 (API) e React 19 (SPA).
 
-![Stack](https://img.shields.io/badge/Laravel-13-red?logo=laravel)
+![Laravel](https://img.shields.io/badge/Laravel-13-red?logo=laravel)
 ![React](https://img.shields.io/badge/React-19-blue?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)
 ![PHP](https://img.shields.io/badge/PHP-8.4-purple?logo=php)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)
+![SQLite](https://img.shields.io/badge/SQLite-3-blue?logo=sqlite)
 
 ---
 
 ## ✨ Funcionalidades
 
-- 🔐 **Autenticação via API** — registro, login e logout com tokens Laravel Sanctum
-- 📊 **Dashboard** com cards de métricas + gráfico de pizza (Recharts)
-- 👥 **CRUD completo de clientes** — criar, listar, editar e excluir
-- 🔍 **Busca e filtros** — pesquisa por nome e filtro por status (ativo/inativo/lead)
-- 📄 **Paginação** no backend e frontend
-- 🎨 **UI moderna** — TailwindCSS 4 + ícones Lucide
-- 📱 **Responsivo** — funciona em desktop e mobile
+### 📊 Dashboard
+- Cards de métricas: clientes, empresas, receita total
+- 💰 Cards financeiros: receita total, faturamento do mês, pendentes
+- 📈 Gráfico de barras: vendas por mês
+- 🥧 Gráfico de pizza: distribuição de clientes (ativos/inativos/leads)
+- 👥 Lista de clientes recentes
+- 📥 Exportar CSV
+
+### 👥 Clientes
+- CRUD completo com modal
+- Busca por nome/email e filtro por status
+- Vínculo com empresas
+- Paginação server-side
+
+### 💰 Vendas
+- Registro de vendas por cliente
+- Status: concluída, pendente, cancelada
+- Filtro por status e busca por descrição
+
+### 🏦 Financeiro
+- Controle de entradas e saídas
+- Categorização (serviço, produto, assinatura, etc.)
+- Cards de saldo total, entradas e saídas do mês
+
+### 📅 Agenda
+- Compromissos com clientes
+- Navegação mensal
+- Status: agendado, concluído, cancelado
+
+### 🏢 Empresas
+- Cadastro de empresas vinculadas aos clientes
+- Listagem completa
+
+### 🎨 UI/UX
+- 🔐 Autenticação via API (Laravel Sanctum)
+- 🌙 Dark mode
+- 📱 100% responsivo (mobile-first)
+- 🎭 Animações e transições
+- 🔔 Notificações toast
 
 ---
 
-## 🛠 Stack Técnica
+## 🐳 Docker (Recomendado)
 
-### Backend
-| Tecnologia | Descrição |
-|---|---|
-| **Laravel 13** | Framework PHP com arquitetura MVC |
-| **Sanctum** | Autenticação token-based para API |
-| **SQLite** | Banco de dados leve (troque por MySQL/Postgres em produção) |
-| **Form Requests** | Validação de dados desacoplada dos controllers |
-| **API Resources** | Transformação consistente de dados JSON |
-| **Policies** | Autorização por usuário (cada vendedor vê só seus clientes) |
+```bash
+# Clone
+git clone https://github.com/WalliceCariasPerussio/clientflow.git
+cd clientflow
 
-### Frontend
-| Tecnologia | Descrição |
-|---|---|
-| **React 19** | Biblioteca UI com hooks e componentes funcionais |
-| **TypeScript** | Tipagem estática ponta a ponta |
-| **Vite 8** | Build tool ultrarrápido |
-| **TailwindCSS 4** | CSS utility-first com design system customizado |
-| **Recharts** | Gráficos interativos |
-| **React Router 7** | Roteamento SPA com lazy loading |
-| **Axios** | HTTP client com interceptors para auth automática |
+# Build + iniciar
+docker compose up -d --build
+
+# Acessar
+open http://localhost:8006
+```
+
+> **Credenciais demo:** `demo@clientflow.app` / `password`
+
+### Comandos úteis
+
+```bash
+# Logs
+docker compose logs -f
+
+# Reiniciar
+docker compose restart
+
+# Rebuild após alterações
+docker compose up -d --build
+
+# Parar
+docker compose down
+```
+
+### Estrutura Docker
+
+```
+clientflow/
+├── Dockerfile              # PHP 8.4-fpm + Nginx + Supervisor
+├── docker-compose.yml      # Porta 8006, volumes persistentes
+├── entrypoint.sh           # Migrations + seed automáticos
+├── nginx/
+│   └── default.conf        # Serve frontend build + proxy /api → PHP-FPM
+└── supervisor/
+    └── supervisord.conf    # Gerencia PHP-FPM + Nginx
+```
+
+| Serviço | Descrição |
+|---------|-----------|
+| `php-fpm` | Processa requisições PHP/Laravel |
+| `nginx` | Serve frontend estático + proxy reverso |
+| `supervisord` | Mantém ambos os processos vivos |
 
 ---
 
-## 🚀 Rodando localmente
+## 💻 Rodando localmente (dev)
 
 ### Pré-requisitos
 - PHP 8.3+
@@ -67,8 +128,6 @@ php artisan migrate:fresh --seed
 php artisan serve --port=8000
 ```
 
-> **Credenciais demo:** `demo@clientflow.app` / `password`
-
 ### Frontend
 
 ```bash
@@ -84,51 +143,62 @@ Acesse: [http://localhost:5173](http://localhost:5173)
 ## 📡 API Endpoints
 
 ### Públicos
+
 | Método | Rota | Descrição |
-|---|---|---|
+|--------|------|-----------|
 | `POST` | `/api/register` | Registrar novo usuário |
 | `POST` | `/api/login` | Login (retorna token) |
 
 ### Autenticados (Bearer Token)
+
 | Método | Rota | Descrição |
-|---|---|---|
+|--------|------|-----------|
 | `POST` | `/api/logout` | Revogar token |
-| `GET` | `/api/me` | Dados do usuário logado |
-| `GET` | `/api/dashboard` | Estatísticas (total, ativos, inativos, leads) |
-| `GET` | `/api/clients` | Listar clientes (com `?status=active` e paginação) |
+| `GET` | `/api/me` | Dados do usuário |
+| `GET` | `/api/dashboard` | Estatísticas completas |
+| `GET` | `/api/clients` | Listar clientes |
 | `POST` | `/api/clients` | Criar cliente |
-| `GET` | `/api/clients/{id}` | Detalhes do cliente |
 | `PUT` | `/api/clients/{id}` | Atualizar cliente |
 | `DELETE` | `/api/clients/{id}` | Excluir cliente |
+| `GET` | `/api/clients/export` | Exportar CSV |
+| `GET` | `/api/clients/recent` | Clientes recentes |
+| `GET` | `/api/sales` | Listar vendas |
+| `POST` | `/api/sales` | Registrar venda |
+| `GET` | `/api/sales/totals` | Totais de vendas |
+| `GET` | `/api/sales/monthly` | Vendas agrupadas por mês |
+| `GET` | `/api/transactions` | Listar transações |
+| `POST` | `/api/transactions` | Criar transação |
+| `GET` | `/api/transactions/balance` | Saldo financeiro |
+| `GET` | `/api/appointments` | Listar compromissos |
+| `POST` | `/api/appointments` | Agendar compromisso |
+| `GET` | `/api/companies` | Listar empresas |
+| `POST` | `/api/companies` | Criar empresa |
 
 ---
 
-## 📁 Estrutura do Projeto
+## 🛠 Stack Técnica
 
-```
-clientflow/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/Api/    # Auth, Client, Dashboard
-│   │   ├── Requests/            # Validação (StoreClient, UpdateClient, etc.)
-│   │   └── Resources/           # Transformação JSON (ClientResource, UserResource)
-│   ├── Models/                  # User, Client (Eloquent)
-│   └── Policies/               # ClientPolicy (autorização)
-├── database/
-│   ├── migrations/              # Tabelas: users, clients, personal_access_tokens
-│   ├── factories/               # UserFactory, ClientFactory
-│   └── seeders/                 # DatabaseSeeder (usuário demo + 20 clientes)
-├── routes/
-│   └── api.php                  # Rotas da API REST
-├── frontend/
-│   └── src/
-│       ├── contexts/            # AuthContext (estado global de autenticação)
-│       ├── components/          # Layout (sidebar + outlet)
-│       ├── pages/               # Login, Dashboard, Clients
-│       └── lib/                 # api.ts (axios), utils.ts
-└── config/
-    └── cors.php                 # Configuração CORS
-```
+### Backend
+
+| Tecnologia | Descrição |
+|------------|-----------|
+| **Laravel 13** | Framework PHP MVC |
+| **Sanctum** | Auth token-based |
+| **SQLite** | Banco leve (troque por MySQL/PG em prod) |
+| **API Resources** | Transformação JSON |
+| **Policies** | Autorização por usuário |
+
+### Frontend
+
+| Tecnologia | Descrição |
+|------------|-----------|
+| **React 19** | UI com hooks + componentes |
+| **TypeScript** | Tipagem estática |
+| **Vite 8** | Build tool |
+| **TailwindCSS 4** | CSS utility-first |
+| **Recharts** | Gráficos (barra + pizza) |
+| **React Router 7** | Roteamento SPA |
+| **Lucide** | Ícones |
 
 ---
 
@@ -144,4 +214,4 @@ clientflow/
 
 ## 📝 Licença
 
-MIT — sinta-se livre para usar como base para seus projetos ou como material de estudo.
+MIT — use como base para seus projetos ou portfólio.
