@@ -1,88 +1,65 @@
-1|{
-2|    "$schema": "https://getcomposer.org/schema.json",
-3|    "name": "laravel/laravel",
-4|    "type": "project",
-5|    "description": "The skeleton application for the Laravel framework.",
-6|    "keywords": ["laravel", "framework"],
-7|    "license": "MIT",
-8|    "require": {
-9|        "php": "^8.3",
-10|        "laravel/framework": "^13.8",
-11|        "laravel/sanctum": "^4.3",
-12|        "laravel/tinker": "^3.0"
-13|    },
-14|    "require-dev": {
-15|        "fakerphp/faker": "^1.23",
-16|        "laravel/pail": "^1.2.5",
-17|        "laravel/pao": "^1.0.6",
-18|        "laravel/pint": "^1.27",
-19|        "mockery/mockery": "^1.6",
-20|        "nunomaduro/collision": "^8.6",
-21|        "phpunit/phpunit": "^12.5.12"
-22|    },
-23|    "autoload": {
-24|        "psr-4": {
-25|            "App\\": "app/",
-26|            "Database\\Factories\\": "database/factories/",
-27|            "Database\\Seeders\\": "database/seeders/"
-28|        }
-29|    },
-30|    "autoload-dev": {
-31|        "psr-4": {
-32|            "Tests\\": "tests/"
-33|        }
-34|    },
-35|    "scripts": {
-36|        "setup": [
-37|            "composer install",
-38|            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-39|            "@php artisan key:generate",
-40|            "@php artisan migrate --force",
-41|            "npm install --ignore-scripts",
-42|            "npm run build"
-43|        ],
-44|        "dev": [
-45|            "Composer\\Config::disableProcessTimeout",
-46|            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
-47|        ],
-48|        "test": [
-49|            "@php artisan config:clear --ansi @no_additional_args",
-50|            "@php artisan test"
-51|        ],
-52|        "post-autoload-dump": [
-53|            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-54|            "@php artisan package:discover --ansi"
-55|        ],
-56|        "post-update-cmd": [
-57|            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-58|        ],
-59|        "post-root-package-install": [
-60|            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-61|        ],
-62|        "post-create-project-cmd": [
-63|            "@php artisan key:generate --ansi",
-64|            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-65|            "@php artisan migrate --graceful --ansi"
-66|        ],
-67|        "pre-package-uninstall": [
-68|            "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
-69|        ]
-70|    },
-71|    "extra": {
-72|        "laravel": {
-73|            "dont-discover": []
-74|        }
-75|    },
-76|    "config": {
-77|        "optimize-autoloader": true,
-78|        "preferred-install": "dist",
-79|        "sort-packages": true,
-80|        "allow-plugins": {
-81|            "pestphp/pest-plugin": true,
-82|            "php-http/discovery": true
-83|        }
-84|    },
-85|    "minimum-stability": "stable",
-86|    "prefer-stable": true
-87|}
-88|
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The skeleton application for the Laravel framework.",
+    "keywords": ["laravel", "framework"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.3",
+        "fakerphp/faker": "^1.23",
+        "laravel/framework": "^13.8",
+        "laravel/sanctum": "^4.3",
+        "laravel/tinker": "^3.0"
+    },
+    "require-dev": {
+        "laravel/pail": "^1.2.5",
+        "laravel/pao": "^1.0.6",
+        "laravel/pint": "^1.27",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "phpunit/phpunit": "^12.5.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
